@@ -127,9 +127,13 @@ func (m *Masker) Struct(s interface{}) (interface{}, error) {
 	for i := 0; i < selem.NumField(); i++ {
 		mtag := selem.Type().Field(i).Tag.Get(tagName)
 		if len(mtag) == 0 {
-			tptr.Elem().Field(i).Set(selem.Field(i))
+			if tptr.Elem().Field(i).CanSet() {
+				tptr.Elem().Field(i).Set(selem.Field(i))
+			}
+
 			continue
 		}
+		
 		switch selem.Field(i).Type().Kind() {
 		default:
 			tptr.Elem().Field(i).Set(selem.Field(i))
